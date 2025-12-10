@@ -1,0 +1,54 @@
+[Unit]
+Description=Elasticsearch
+Documentation=https://www.elastic.co
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+# 运行用户和组（根据你的安装方式调整）
+User={{ host.data.get("es_user", "elastic") }}
+Group={{ host.data.get("es_group", "elastic") }}
+
+# Elasticsearch 安装路径
+Environment=ES_HOME={{ host.data.get("elastic_work_path", "/usr/local/elastic") }}
+Environment=ES_PATH_CONF={{ host.data.get("elastic_work_path", "/usr/local/elastic") }}/config
+Environment=PID_DIR={{ host.data.get("elastic_pid_path", "/var/run/elastic") }}
+Environment=ES_SD_NOTIFY=true
+
+# 内存限制
+Environment=ES_JAVA_OPTS="-Xms4g -Xmx4g"
+
+# 安全限制
+LimitMEMLOCK=infinity
+LimitNOFILE=65535
+LimitNPROC=65535
+
+# 工作目录
+WorkingDirectory={{ host.data.get("elastic_work_path", "/usr/local/elastic") }}
+
+# 启动命令
+ExecStart={{ host.data.get("elastic_work_path", "/usr/local/elastic") }}/bin/elasticsearch \
+          -p ${PID_DIR}/elasticsearch.pid \
+          --quiet
+
+# 标准输出和错误输出
+StandardOutput=journal
+StandardError=inherit
+
+# 重启策略
+Restart=on-failure
+RestartSec=10
+
+TimeoutStartSec=300
+# 优雅关闭超时时间
+TimeoutStopSec=300
+
+# 在 cgroup 中运行
+Slice=system.slice
+
+# 通知 systemd
+Type=simple
+NotifyAccess=none
+
+[Install]
+WantedBy=multi-user.target

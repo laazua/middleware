@@ -1,0 +1,33 @@
+[Unit]
+Description=Apache Kafka 4.1.1 (Broker)
+Documentation=http://kafka.apache.org
+After=network.target
+
+[Service]
+Type=simple
+User=kafka
+Group=kafka
+# 修改为你的 Kafka 安装目录
+Environment="JAVA_HOME={{ host.data.get('openjdk_home_path') }}"
+Environment="KAFKA_HEAP_OPTS=-Xmx2G -Xms2G"
+Environment="KAFKA_JMX_OPTS=-Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Dcom.sun.management.jmxremote.port=9999"
+#Environment="JMX_PORT=9999"
+
+# Kafka 配置文件路径
+ExecStart={{ host.data.get('kfk_work_path') }}/bin/kafka-server-start.sh {{ host.data.get('kfk_work_path') }}/config/server.properties
+ExecStop={{ host.data.get('kfk_work_path') }}/bin/kafka-server-stop.sh
+Restart=on-failure
+RestartSec=10
+SuccessExitStatus=143
+
+# 安全限制
+LimitNOFILE=65536
+LimitCORE=infinity
+TimeoutStopSec=60
+
+# 日志配置
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

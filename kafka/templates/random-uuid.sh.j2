@@ -1,0 +1,8 @@
+#!/bin/bash
+
+source /etc/profile.d/jdk.sh
+
+kafka_work_path={{ host.data.get('kfk_work_path') }}
+if [ ! -f /var/log/kafka/meta.properties ];then
+  ${kafka_work_path}/bin/kafka-storage.sh format -t {{ host.data.get('cluster_id', 'C_V4rzemStO-PHN29tWHVw') }} -c ${kafka_work_path}/config/server.properties --ignore-formatted
+fi

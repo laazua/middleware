@@ -1,0 +1,37 @@
+# 集群名称
+cluster.name: {{ host.data.get("elastic_cluster_name", "es-cluster") }}
+
+# 节点名称
+node.name: {{ host.data.get("elastic_node_name") }}
+
+# 数据路径
+path.data: {{ host.data.get("elastic_data_path", "/var/lib/elasticsearch") }}
+
+# 日志路径
+path.logs: {{ host.data.get("elastic_log_path", "/var/log/elasticsearch") }}
+
+# 网络设置
+network.host: 0.0.0.0
+
+# http端口
+http.port: {{ host.data.get("elastic_http_port", 9200) }}
+
+# 发现设置
+{% if host.group_data.get('es_node_ips') %}
+discovery.seed_hosts: {{ host.group_data.get('es_node_ips') }}
+cluster.initial_master_nodes: {{ host.group_data.get('es_node_names') }}
+{% endif %}
+
+# 传输层SSL配置
+xpack.security.transport.ssl.enabled: true
+xpack.security.transport.ssl.verification_mode: certificate
+xpack.security.transport.ssl.key: {{ host.data.get("elastic_work_path", "/usr/local/elasticsearch-9.1.1") }}/config/certs/instance/instance.key
+xpack.security.transport.ssl.certificate: {{ host.data.get("elastic_work_path", "/usr/local/elasticsearch-9.1.1") }}/config/certs/instance/instance.crt
+xpack.security.transport.ssl.certificate_authorities: [{{ host.data.get("elastic_work_path", "/usr/local/elasticsearch-9.1.1") }}/config/certs/ca/ca.crt]
+
+### HTTP层SSL(可选,但推荐)
+# 调试时,设置为false,生产环境请设置为true
+xpack.security.http.ssl.enabled: true
+xpack.security.http.ssl.key: {{ host.data.get("elastic_work_path", "/usr/local/elasticsearch-9.1.1") }}/config/certs/instance/instance.key
+xpack.security.http.ssl.certificate: {{ host.data.get("elastic_work_path", "/usr/local/elasticsearch-9.1.1") }}/config/certs/instance/instance.crt
+xpack.security.http.ssl.certificate_authorities: [{{ host.data.get("elastic_work_path", "/usr/local/elasticsearch-9.1.1") }}/config/certs/ca/ca.crt]

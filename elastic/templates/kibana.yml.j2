@@ -1,0 +1,12 @@
+server.port: {{ host.data.get("kibana_http_port", 5601) }}
+server.host: "{{ host.data.get("kibana_http_host", "192.168.165.87") }}"
+elasticsearch.hosts: {{ host.group_data.get("es_hosts") }}
+
+elasticsearch.username: "kibana_system"
+elasticsearch.password: "sHQUXhQS7VgqKCKErPJZ"
+elasticsearch.ssl.certificate: {{ host.data.get("kibana_work_path", "/usr/local/kibana-9.1.1") }}/config/certs/client/client.crt
+elasticsearch.ssl.key: {{ host.data.get("kibana_work_path", "/usr/local/kibana-9.1.1") }}/config/certs/client/client.key
+elasticsearch.ssl.certificateAuthorities: [ "{{ host.data.get("kibana_work_path", "/usr/local/kibana-9.1.1") }}/config/certs/ca/ca.crt" ]
+path.data: {{ host.data.get("kibana_data_path", "/var/lib/kibana") }}
+
+i18n.locale: "zh-CN"

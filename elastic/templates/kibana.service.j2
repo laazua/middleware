@@ -1,0 +1,39 @@
+[Unit]
+Description=Kibana
+Documentation=https://www.elastic.co
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=simple
+User=kibana
+Group=kibana
+Environment="KIBANA_HOME={{ host.data.get("kibana_work_path", "/usr/local/kibana-9.1.1") }}"
+Environment="KIBANA_PATH_CONF={{ host.data.get("kibana_work_path", "/usr/local/kibana-9.1.1") }}/config"
+Environment="NODE_OPTIONS=--max-old-space-size=2048"
+
+# 使用绝对路径
+ExecStart={{ host.data.get("kibana_work_path", "/usr/local/kibana-9.1.1") }}/bin/kibana
+
+WorkingDirectory={{ host.data.get("kibana_work_path", "/usr/local/kibana-9.1.1") }}
+Restart=on-failure
+RestartSec=10
+
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=kibana
+
+# 资源限制
+LimitNOFILE=65536
+LimitNPROC=4096
+
+# 安全设置 - 但确保有写入权限
+PrivateTmp=true
+NoNewPrivileges=true
+
+# 关键：允许写入的路径
+ReadWritePaths={{ host.data.get("kibana_data_path", "/var/lib/kibana") }}
+ReadWritePaths={{ host.data.get("kibana_log_path", "/var/log/kibana") }}
+
+[Install]
+WantedBy=multi-user.target
